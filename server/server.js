@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 app.use(cors({
-  origin: ['http://localhost:5173','https://eduationforall.vercel.app'],
+  origin: ['http://localhost:5173','https://eduationforall.vercel.app','https://time-table-gen.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
