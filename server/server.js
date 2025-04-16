@@ -95,6 +95,7 @@ const connectDb = require('./utils/db');
 const nodemailer = require('nodemailer');
 const teacherRouter = require('./routers/teacher-router');
 const studentRouter = require('./routers/student-router');
+const adminRouter = require('./routers/admin-router');
 const { errorMiddleware } = require('./middlewares/teacher-middleware');
 
 const app = express();
@@ -111,6 +112,7 @@ app.use(express.json());
 // Routes
 app.use('/api/teachers', teacherRouter);
 app.use('/api/students', studentRouter);
+app.use('/api/admin', adminRouter);
 
 // Nodemailer Transporter Configuration
 const transporter = nodemailer.createTransport({

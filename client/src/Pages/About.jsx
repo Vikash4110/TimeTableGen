@@ -75,7 +75,7 @@ const TimetableAbout = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50">
+      {/* <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <motion.div 
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
@@ -102,7 +102,7 @@ const TimetableAbout = () => {
             ))}
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Our Story */}
       <section className="py-20">

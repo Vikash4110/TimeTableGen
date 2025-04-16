@@ -7,14 +7,10 @@ import {
   FaSignOutAlt,
   FaHome,
   FaInfoCircle,
+  FaBell,
   FaChevronDown,
   FaChevronUp,
-  FaSearch,
   FaChalkboardTeacher,
-  FaBook,
-  FaGraduationCap,
-  FaEnvelope,
-  FaBell,
   FaUserGraduate,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,13 +20,17 @@ import { toast } from "sonner";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const { isLoggedIn, logoutUser, user, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const dropdownRef = useRef(null);
+
+  // Debug user and role
+  useEffect(() => {
+    console.log("Navbar user:", user);
+    console.log("Navbar role:", role);
+  }, [user, role]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,19 +40,13 @@ const Navbar = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Scroll effect for navbar
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
+      setScrolled(window.scrollY > 10);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -62,7 +56,6 @@ const Navbar = () => {
   useEffect(() => {
     setIsOpen(false);
     setIsDropdownOpen(false);
-    setIsSearchOpen(false);
   }, [location]);
 
   const handleLogout = () => {
@@ -71,28 +64,20 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-      setIsSearchOpen(false);
-    }
-  };
-
-  // Navigation links with improved structure
+  // Navigation links
   const navLinks = [
     { to: "/", text: "Home", icon: <FaHome className="text-lg" /> },
     { to: "/about", text: "About", icon: <FaInfoCircle className="text-lg" /> },
     { to: "/contact", text: "Contact", icon: <FaBell className="text-lg" /> },
-
   ];
 
-  // Dashboard and profile links based on role
-  const dashboardLink = role === "teacher" ? "/teacher-dashboard" : "/student-dashboard";
-  const profileLink = role === "teacher" ? "/teacher-profile" : "/student-profile";
-  const loginLink = role === "teacher" ? "/teacher-login" : "/student-login";
-  const registerLink = role === "teacher" ? "/teacher-register" : "/student-register";
+  // Safely determine dashboard and profile links
+  const dashboardLink = role === "teacher" ? "/teacher-dashboard" : role === "student" ? "/student-dashboard" : "/admin-dashboard";
+  const profileLink = role === "teacher" ? "/teacher-profile" : role === "student" ? "/student-profile" : "/admin-profile";
+
+  // Safely handle user display
+  const displayName = user && typeof user.email === "string" ? user.email.split("@")[0] : "User";
+  const displayEmail = user && typeof user.email === "string" ? user.email : "user@example.com";
 
   return (
     <motion.nav
@@ -109,7 +94,7 @@ const Navbar = () => {
           <motion.div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center space-x-2">
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
-                <FaGraduationCap className="h-6 w-6 text-white" />
+                <FaUserGraduate className="h-6 w-6 text-white" />
               </div>
               <motion.span className="text-2xl font-bold text-gray-800">
                 <span className="text-blue-600">Uni</span>Schedule
@@ -138,23 +123,6 @@ const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
-            {/* Search Button */}
-            {/* <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-gray-600 hover:text-blue-600 transition-colors relative"
-              aria-label="Search"
-            >
-              <FaSearch className="w-5 h-5" />
-            </button> */}
-
-            {/* Notification Bell */}
-            {isLoggedIn && (
-              {/* <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors relative hidden lg:block">
-                <FaBell className="w-5 h-5" />
-                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button> */}
-            )}
-
             {isLoggedIn ? (
               <div className="relative hidden lg:block" ref={dropdownRef}>
                 <button
@@ -162,11 +130,9 @@ const Navbar = () => {
                   className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
                 >
                   <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                    {user?.name?.charAt(0) || "U"}
+                    {displayName.charAt(0).toUpperCase()}
                   </div>
-                  <span className="font-medium text-gray-700">
-                    {user?.name || "User"}
-                  </span>
+                  <span className="font-medium text-gray-700">{displayName}</span>
                   {isDropdownOpen ? (
                     <FaChevronUp className="text-gray-500 text-xs" />
                   ) : (
@@ -184,12 +150,8 @@ const Navbar = () => {
                       transition={{ duration: 0.2 }}
                     >
                       <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-700">
-                          {user?.name || "User"}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {user?.email || "user@example.com"}
-                        </p>
+                        <p className="text-sm font-medium text-gray-700">{displayName}</p>
+                        <p className="text-xs text-gray-500 truncate">{displayEmail}</p>
                       </div>
                       <Link
                         to={profileLink}
@@ -227,12 +189,6 @@ const Navbar = () => {
                 >
                   <FaUserGraduate className="mr-2" /> Student Login
                 </Link>
-                {/* <Link
-                  to="/student-register"
-                  className="hidden lg:flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-md font-medium hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
-                >
-                  <FaUserGraduate className="mr-2" /> Student Register
-                </Link> */}
               </>
             )}
 
@@ -250,37 +206,6 @@ const Navbar = () => {
             </button>
           </div>
         </div>
-
-        {/* Search Bar */}
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.div
-              className="mt-3"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {/* <form onSubmit={handleSearch} className="relative">
-                <input
-                  type="text"
-                  placeholder="Search courses, instructors..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full p-3 pl-10 pr-4 border border-gray-200 bg-gray-50 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white"
-                  autoFocus
-                />
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <button
-                  type="submit"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600 font-medium"
-                >
-                  Search
-                </button>
-              </form> */}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* Mobile Menu */}
@@ -294,33 +219,21 @@ const Navbar = () => {
             transition={{ duration: 0.3 }}
           >
             <div className="container mx-auto px-4 py-4">
-              {/* <form onSubmit={handleSearch} className="relative mb-4">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full p-3 pl-10 pr-4 border border-gray-200 bg-gray-50 text-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              </form> */}
-
               <div className="flex flex-col space-y-1">
                 {navLinks.map((link) => (
-                  <React.Fragment key={link.to}>
-                    <Link
-                      to={link.to}
-                      className={`px-4 py-3 rounded-md font-medium flex items-center ${
-                        location.pathname === link.to
-                          ? "bg-blue-50 text-blue-600"
-                          : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
-                      }`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <span className="mr-3">{link.icon}</span>
-                      {link.text}
-                    </Link>
-                  </React.Fragment>
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className={`px-4 py-3 rounded-md font-medium flex items-center ${
+                      location.pathname === link.to
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="mr-3">{link.icon}</span>
+                    {link.text}
+                  </Link>
                 ))}
 
                 {isLoggedIn ? (
@@ -364,13 +277,6 @@ const Navbar = () => {
                     >
                       <FaUserGraduate className="mr-2" /> Student Login
                     </Link>
-                    {/* <Link
-                      to="/student-register"
-                      className="px-4 py-3 rounded-md font-medium flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <FaUserGraduate className="mr-2" /> Student Register
-                    </Link> */}
                   </>
                 )}
               </div>
