@@ -196,7 +196,7 @@ const TimetableAbout = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-indigo-700 to-purple-600 text-white">
+      {/* <section className="py-20 bg-gradient-to-r from-indigo-700 to-purple-600 text-white">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0 }}
@@ -228,7 +228,7 @@ const TimetableAbout = () => {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

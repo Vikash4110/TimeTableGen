@@ -3,33 +3,30 @@ import { motion } from "framer-motion";
 import {
   FaUserGraduate,
   FaHome,
-  FaBuilding,
-  FaChalkboardTeacher,
+  FaBook,
   FaCalendarAlt,
   FaClipboardList,
   FaSignOutAlt,
   FaSearch,
-  FaBook,
   FaCheck,
+  FaUserEdit,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../Store/auth";
-import SchedulePage from '../Pages/StudentPage'; // Placeholder for new page component
 
-const TimetableDashboard = () => {
+const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logoutUser, isLoading, authorizationToken, role, isLoggedIn, isLoggingOut } = useAuth();
 
-
-useEffect(() => {
-  if (!isLoading && role !== "teacher" && isLoggedIn && !isLoggingOut) {
-    toast.error("Access denied. Teachers only.");
-    navigate("/teacher-login");
-  }
-}, [isLoading, role, navigate, isLoggedIn, isLoggingOut]);
+  useEffect(() => {
+    if (!isLoading && role !== "student" && isLoggedIn && !isLoggingOut) {
+      toast.error("Access denied. Students only.");
+      navigate("/student-login");
+    }
+  }, [isLoading, role, navigate, isLoggedIn, isLoggingOut]);
 
   const NavItem = ({ icon, label, active, onClick }) => (
     <motion.div whileHover={{ x: 3 }} whileTap={{ scale: 0.98 }}>
@@ -70,32 +67,32 @@ useEffect(() => {
   const DashboardHome = ({ user, setActiveTab }) => {
     const stats = [
       {
-        icon: <FaUserGraduate className="text-blue-500" />,
-        value: "120",
-        label: "Faculty",
-        change: "+5 this semester",
-        onClick: () => setActiveTab("faculty"),
+        icon: <FaBook className="text-blue-500" />,
+        value: "6",
+        label: "Enrolled Courses",
+        change: "2 new this semester",
+        onClick: () => setActiveTab("courses"),
       },
       {
-        icon: <FaBuilding className="text-purple-500" />,
-        value: "45",
-        label: "Rooms",
-        change: "10 booked today",
-        onClick: () => setActiveTab("rooms"),
+        icon: <FaCalendarAlt className="text-purple-500" />,
+        value: "5",
+        label: "Weekly Classes",
+        change: "Updated today",
+        onClick: () => setActiveTab("schedule"),
       },
       {
-        icon: <FaCalendarAlt className="text-green-500" />,
-        value: "15",
-        label: "Schedules Generated",
-        change: "2 new today",
-        onClick: () => setActiveTab("schedules"),
+        icon: <FaClipboardList className="text-green-500" />,
+        value: "3",
+        label: "Pending Assignments",
+        change: "+1 due tomorrow",
+        onClick: () => setActiveTab("assignments"),
       },
       {
-        icon: <FaClipboardList className="text-orange-500" />,
-        value: "8",
-        label: "Pending Adjustments",
-        change: "+3 this week",
-        onClick: () => setActiveTab("adjustments"),
+        icon: <FaUserEdit className="text-orange-500" />,
+        value: "1",
+        label: "Profile Updates",
+        change: "Verify email",
+        onClick: () => setActiveTab("profile"),
       },
     ];
 
@@ -110,9 +107,9 @@ useEffect(() => {
         >
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold mb-2">Welcome back, {user?.adminName || "Admin"}!</h2>
+              <h2 className="text-2xl font-bold mb-2">Welcome back, {user?.name || "Student"}!</h2>
               <p className="opacity-90 max-w-lg">
-                Manage university schedules efficiently. Generate timetables, adjust rooms, or review faculty availability.
+                Stay on top of your studies. Check your schedule, assignments, or update your profile.
               </p>
             </div>
             <div className="bg-white/20 p-3 rounded-lg">
@@ -144,18 +141,18 @@ useEffect(() => {
                 <FaCalendarAlt />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-800">Timetable Generated</h4>
-                <p className="text-sm text-gray-600">Fall 2025 schedule for Computer Science Dept created</p>
+                <h4 className="font-medium text-gray-800">Schedule Updated</h4>
+                <p className="text-sm text-gray-600">New class added for Data Structures</p>
               </div>
-              <span className="text-xs text-gray-400 whitespace-nowrap">2 hours ago</span>
+              <span className="text-xs text-gray-400 whitespace-nowrap">1 hour ago</span>
             </div>
             <div className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
               <div className="p-2 rounded-lg bg-green-100 text-green-600">
                 <FaCheck />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-800">Room Adjusted</h4>
-                <p className="text-sm text-gray-600">Room B-204 reassigned for Physics 101</p>
+                <h4 className="font-medium text-gray-800">Assignment Submitted</h4>
+                <p className="text-sm text-gray-600">Completed Algorithms homework</p>
               </div>
               <span className="text-xs text-gray-400 whitespace-nowrap">Yesterday</span>
             </div>
@@ -168,42 +165,47 @@ useEffect(() => {
   const handleLogout = () => {
     logoutUser();
     toast.success("Logged out successfully");
-    navigate("/admin-login");
+    navigate("/student-login");
   };
 
   const tabConfig = [
     { id: "home", label: "Dashboard", icon: <FaHome className="w-4 h-4" /> },
-    { id: "faculty", label: "Faculty", icon: <FaUserGraduate className="w-4 h-4" /> },
-    { id: "rooms", label: "Rooms", icon: <FaBuilding className="w-4 h-4" /> },
-    { id: "schedules", label: "Schedules", icon: <FaCalendarAlt className="w-4 h-4" /> },
-    { id: "adjustments", label: "Adjustments", icon: <FaClipboardList className="w-4 h-4" /> },
+    { id: "courses", label: "Courses", icon: <FaBook className="w-4 h-4" /> },
+    { id: "schedule", label: "Schedule", icon: <FaCalendarAlt className="w-4 h-4" /> },
+    { id: "assignments", label: "Assignments", icon: <FaClipboardList className="w-4 h-4" /> },
+    { id: "profile", label: "Profile", icon: <FaUserEdit className="w-4 h-4" /> },
   ];
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "home":
         return <DashboardHome user={user} setActiveTab={setActiveTab} />;
-      case "faculty":
+      case "courses":
         return (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Faculty Management</h3>
-            <p className="text-gray-500 mt-2">View and manage faculty availability and preferences.</p>
+            <h3 className="text-xl font-medium text-gray-600">Course Management</h3>
+            <p className="text-gray-500 mt-2">View enrolled courses and access study materials.</p>
           </div>
         );
-      case "rooms":
+      case "schedule":
         return (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Room Management</h3>
-            <p className="text-gray-500 mt-2">Assign and review room allocations for classes.</p>
+            <h3 className="text-xl font-medium text-gray-600">Class Schedule</h3>
+            <p className="text-gray-500 mt-2">Check your weekly timetable and class details.</p>
           </div>
         );
-      case "schedules":
-        return <SchedulePage authorizationToken={authorizationToken} />; // Render SchedulePage
-      case "adjustments":
+      case "assignments":
         return (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Timetable Adjustments</h3>
-            <p className="text-gray-500 mt-2">Manually adjust schedules and resolve conflicts.</p>
+            <h3 className="text-xl font-medium text-gray-600">Assignments</h3>
+            <p className="text-gray-500 mt-2">Track pending assignments and submission deadlines.</p>
+          </div>
+        );
+      case "profile":
+        return (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <h3 className="text-xl font-medium text-gray-600">Profile Management</h3>
+            <p className="text-gray-500 mt-2">Update your personal information and settings.</p>
           </div>
         );
       default:
@@ -246,11 +248,11 @@ useEffect(() => {
           <div className="mb-10 flex flex-col items-start">
             <div className="flex items-center gap-3 mb-2">
               <div className="bg-blue-500 p-2 rounded-lg">
-                <FaChalkboardTeacher className="text-white text-xl" />
+                <FaUserGraduate className="text-white text-xl" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">TimetableGenerator</h2>
+              <h2 className="text-2xl font-bold text-gray-800">StudentPortal</h2>
             </div>
-            <p className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full">Admin Dashboard</p>
+            <p className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full">Student Dashboard</p>
           </div>
 
           {/* Navigation */}
@@ -281,7 +283,10 @@ useEffect(() => {
 
           {/* User Profile Mini */}
           <div className="flex items-center gap-3 mt-6 p-3 bg-gray-50 rounded-lg">
-            {/* Add user profile content if needed */}
+            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+              {user?.name?.charAt(0) || "S"}
+            </div>
+            <span className="font-medium text-gray-700 text-sm">{user?.name || "Student"}</span>
           </div>
         </div>
       </motion.aside>
@@ -295,21 +300,21 @@ useEffect(() => {
           </h1>
 
           <div className="flex items-center gap-4">
-            {/* <div className="relative">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search..."
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
-            </div> */}
+            </div>
 
-            {/* <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                {user?.adminName?.charAt(0) || "A"}
+                {user?.name?.charAt(0) || "S"}
               </div>
-              <span className="font-medium text-gray-700 hidden md:inline">{user?.adminName || "Admin"}</span>
-            </div> */}
+              <span className="font-medium text-gray-700 hidden md:inline">{user?.name || "Student"}</span>
+            </div>
           </div>
         </div>
 
@@ -332,4 +337,4 @@ useEffect(() => {
   );
 };
 
-export default TimetableDashboard;
+export default StudentDashboard;

@@ -85,7 +85,7 @@ const Loader = () => {
           }}
         >
           <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg">
-            <span className="text-white text-2xl font-bold">EFA</span>
+            <span className="text-white text-2xl font-bold">Uni</span>
           </div>
         </motion.div>
 
@@ -121,7 +121,7 @@ const Loader = () => {
         animate="animate"
       >
         <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">
-          EducationForAll
+          UniSchedule
         </h2>
         <motion.p 
           className="text-gray-600 mt-2"

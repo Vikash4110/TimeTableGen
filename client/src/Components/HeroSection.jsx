@@ -162,14 +162,14 @@ const HeroSection = () => {
                 </motion.div>
               </motion.div>
               
-              <motion.div 
+              {/* <motion.div 
                 className="grid grid-cols-3 gap-4 max-w-md"
                 variants={textVariants}
               >
                 {stats.map((item, index) => (
                   <StatItem key={index} item={item} index={index} />
                 ))}
-              </motion.div>
+              </motion.div> */}
             </div>
           </motion.div>
 

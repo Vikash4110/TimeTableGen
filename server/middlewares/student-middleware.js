@@ -1,5 +1,3 @@
-
-
 const jwt = require('jsonwebtoken');
 const { z } = require('zod');
 
@@ -12,7 +10,7 @@ const authMiddleware = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_KEY);
-    if (decoded.role !== 'teacher') throw new Error('Invalid role');
+    if (decoded.role !== 'student') throw new Error('Invalid role');
     req.user = decoded;
     next();
   } catch (error) {
@@ -35,12 +33,4 @@ const validate = (schema) => async (req, res, next) => {
   }
 };
 
-const errorMiddleware = (err, req, res, next) => {
-  const status = err.status || 500;
-  const message = err.message || 'Internal Server Error';
-  const extraDetails = err.extraDetails || 'An unexpected error occurred';
-  console.error(`[${status}] ${message}: ${extraDetails}`);
-  res.status(status).json({ status, message, extraDetails });
-};
-
-module.exports = { authMiddleware, validate, errorMiddleware };
+module.exports = { authMiddleware, validate };

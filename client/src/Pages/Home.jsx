@@ -22,9 +22,9 @@ const Home = () => {
     <>
       <HeroSection />
       <WhyEdu/>
-      <OurMission />
+      {/* <OurMission />
       <Review />
-      <Footer />
+      <Footer /> */}
     </>
   );
 };

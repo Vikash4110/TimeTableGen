@@ -11,7 +11,6 @@ import {
   faPhone,
   faImage,
   faBook,
-  faChalkboard,
   faKey,
   faArrowLeft,
   faArrowRight,
@@ -23,18 +22,17 @@ import { RotatingLines } from "react-loader-spinner";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const TeacherRegister = () => {
+const StudentRegister = () => {
   const [formData, setFormData] = useState({
-    teacherName: "",
-    username: "",
+    name: "",
+    rollNo: "",
     email: "",
     password: "",
     confirmPassword: "",
     phoneNumber: "",
     profilePicture: null,
-    subject: "",
-    classGrade: "",
-    section: "",
+    semester: "",
+    group: "",
   });
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
@@ -48,18 +46,17 @@ const TeacherRegister = () => {
   const stepTitles = [
     "Personal Information",
     "Contact Details",
-    "Teaching Information",
+    "Academic Information",
     "Verification",
   ];
 
   const stepIcons = [
     <FontAwesomeIcon icon={faUser} className="text-blue-500" />,
     <FontAwesomeIcon icon={faPhone} className="text-blue-500" />,
-    <FontAwesomeIcon icon={faChalkboard} className="text-blue-500" />,
+    <FontAwesomeIcon icon={faBook} className="text-blue-500" />,
     <FontAwesomeIcon icon={faKey} className="text-blue-500" />,
   ];
 
-  // Update progress bar and password strength
   useEffect(() => {
     setProgress((step / 4) * 100);
   }, [step]);
@@ -94,7 +91,7 @@ const TeacherRegister = () => {
 
   const validateStep = () => {
     if (step === 1) {
-      if (!formData.teacherName || !formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
+      if (!formData.name || !formData.rollNo || !formData.email || !formData.password || !formData.confirmPassword) {
         toast.error("Please fill all required fields");
         return false;
       }
@@ -107,17 +104,13 @@ const TeacherRegister = () => {
         return false;
       }
     } else if (step === 2) {
-      if (!formData.phoneNumber) {
-        toast.error("Phone number is required");
-        return false;
-      }
-      if (!/^\d{10}$/.test(formData.phoneNumber)) {
+      if (formData.phoneNumber && !/^\d{10}$/.test(formData.phoneNumber)) {
         toast.error("Phone number must be 10 digits");
         return false;
       }
     } else if (step === 3) {
-      if (!formData.subject || !formData.classGrade || !formData.section) {
-        toast.error("Please fill all teaching information");
+      if (!formData.semester || !formData.group) {
+        toast.error("Please fill all academic information");
         return false;
       }
     }
@@ -146,7 +139,7 @@ const TeacherRegister = () => {
     }
 
     try {
-      const response = await fetch(`${backendUrl}/api/teachers/register`, {
+      const response = await fetch(`${backendUrl}/api/students/register`, {
         method: "POST",
         body: data,
       });
@@ -175,7 +168,7 @@ const TeacherRegister = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${backendUrl}/api/teachers/verify-otp`, {
+      const response = await fetch(`${backendUrl}/api/students/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, otp }),
@@ -188,7 +181,7 @@ const TeacherRegister = () => {
 
       storeTokenInLS(data.token);
       toast.success("Registration successful! Redirecting...");
-      setTimeout(() => navigate("/teacher-dashboard"), 1000);
+      setTimeout(() => navigate("/student-dashboard"), 1000);
     } catch (error) {
       console.error("OTP verification error:", error.message);
       toast.error(error.message);
@@ -227,7 +220,6 @@ const TeacherRegister = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        {/* Header with progress bar */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white relative">
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
             <motion.div
@@ -240,7 +232,7 @@ const TeacherRegister = () => {
             <div>
               <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
                 <FontAwesomeIcon icon={faGraduationCap} className="text-2xl" />
-                Teacher Registration
+                Student Registration
               </h1>
               <p className="text-blue-100 mt-1">Join our educational platform in just a few steps</p>
             </div>
@@ -250,7 +242,6 @@ const TeacherRegister = () => {
           </div>
         </div>
 
-        {/* Step indicators */}
         <div className="px-6 pt-6 pb-2 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between relative">
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 -translate-y-1/2 z-0"></div>
@@ -282,7 +273,6 @@ const TeacherRegister = () => {
           </div>
         </div>
 
-        {/* Form content */}
         <div className="p-6 md:p-8">
           <AnimatePresence mode="wait">
             <motion.div
@@ -308,8 +298,8 @@ const TeacherRegister = () => {
                   <InputField
                     icon={<FontAwesomeIcon icon={faUser} className="text-gray-500" />}
                     type="text"
-                    name="teacherName"
-                    value={formData.teacherName}
+                    name="name"
+                    value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Full Name"
                     required
@@ -317,10 +307,10 @@ const TeacherRegister = () => {
                   <InputField
                     icon={<FontAwesomeIcon icon={faUser} className="text-gray-500" />}
                     type="text"
-                    name="username"
-                    value={formData.username}
+                    name="rollNo"
+                    value={formData.rollNo}
                     onChange={handleInputChange}
-                    placeholder="Username"
+                    placeholder="Roll Number"
                     required
                   />
                   <InputField
@@ -380,8 +370,7 @@ const TeacherRegister = () => {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
-                    placeholder="Phone Number (10 digits)"
-                    required
+                    placeholder="Phone Number (10 digits, optional)"
                     pattern="\d{10}"
                     title="Phone number must be 10 digits"
                     className="py-2 h-10"
@@ -397,32 +386,23 @@ const TeacherRegister = () => {
               )}
 
               {step === 3 && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <InputField
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <SelectField
                     icon={<FontAwesomeIcon icon={faBook} className="text-gray-500" />}
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
+                    name="semester"
+                    value={formData.semester}
                     onChange={handleInputChange}
-                    placeholder="Subject (e.g., Mathematics)"
+                    options={["1", "2", "3", "4", "5", "6", "7", "8"]}
+                    placeholder="Semester"
                     required
                   />
                   <SelectField
-                    icon={<FontAwesomeIcon icon={faChalkboard} className="text-gray-500" />}
-                    name="classGrade"
-                    value={formData.classGrade}
-                    onChange={handleInputChange}
-                    options={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
-                    placeholder="Class Grade"
-                    required
-                  />
-                  <SelectField
-                    icon={<FontAwesomeIcon icon={faChalkboard} className="text-gray-500" />}
-                    name="section"
-                    value={formData.section}
+                    icon={<FontAwesomeIcon icon={faBook} className="text-gray-500" />}
+                    name="group"
+                    value={formData.group}
                     onChange={handleInputChange}
                     options={["A", "B", "C", "D"]}
-                    placeholder="Section"
+                    placeholder="Group"
                     required
                   />
                 </div>
@@ -561,7 +541,7 @@ const TeacherRegister = () => {
           <div className="flex flex-col sm:flex-row justify-between items-center mt-8 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-600 mb-2 sm:mb-0">
               Already have an account?{" "}
-              <Link to="/teacher-login" className="text-blue-600 font-semibold hover:underline transition-all">
+              <Link to="/student-login" className="text-blue-600 font-semibold hover:underline transition-all">
                 Sign in here
               </Link>
             </p>
@@ -655,4 +635,4 @@ const FileUpload = ({ icon, label, name, onChange, profilePreview }) => (
   </motion.div>
 );
 
-export default TeacherRegister;
+export default StudentRegister;
