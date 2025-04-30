@@ -365,7 +365,7 @@ const StudentLogin = () => {
   const [resetOtp, setResetOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { storeTokenInLS, setSubscribed, getSubscriptionStatus } = useAuth();
+  const { login } = useAuth(); // Use login instead of storeTokenInLS
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -389,11 +389,14 @@ const StudentLogin = () => {
         throw new Error(data.error || "Login failed");
       }
 
-      storeTokenInLS(data.token);
-      const isSubscribed = await getSubscriptionStatus();
-      setSubscribed(isSubscribed);
+      const userData = {
+        email: credentials.email,
+        role: "student",
+        subscribed: data.subscribed || false,
+      };
+      login(userData, data.token); // Use login to set auth context
       toast.success("Login successful! Redirecting...");
-      navigate(isSubscribed ? "/student-dashboard" : "/subscription");
+      navigate(data.subscribed ? "/student-dashboard" : "/subscription");
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.message);

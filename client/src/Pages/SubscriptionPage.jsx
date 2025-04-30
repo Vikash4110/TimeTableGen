@@ -8,7 +8,7 @@ import { faCheckCircle, faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { RotatingLines } from "react-loader-spinner";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID; // Add to .env
+const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
 const SubscriptionPage = () => {
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,7 @@ const SubscriptionPage = () => {
       document.body.appendChild(script);
 
       script.onload = async () => {
+        let orderData = null; // Initialize orderData
         try {
           // Create order
           const orderResponse = await fetch(`${backendUrl}/api/students/create-order`, {
@@ -41,9 +42,15 @@ const SubscriptionPage = () => {
               Authorization: authorizationToken,
             },
           });
-          const orderData = await orderResponse.json();
+          orderData = await orderResponse.json();
           if (!orderResponse.ok) {
-            throw new Error(orderData.message || "Failed to create order");
+            console.error("Order creation failed:", orderData);
+            const errorMessage = orderData.extraDetails || orderData.message || "Failed to create order";
+            throw new Error(
+              errorMessage === 'The server encountered an error. The incident has been reported to admins.'
+                ? 'Payment service is temporarily unavailable. Please try again later.'
+                : errorMessage
+            );
           }
 
           const options = {
@@ -70,14 +77,16 @@ const SubscriptionPage = () => {
                 });
                 const verifyData = await verifyResponse.json();
                 if (!verifyResponse.ok) {
-                  throw new Error(verifyData.message || "Payment verification failed");
+                  console.error("Payment verification failed:", verifyData);
+                  throw new Error(verifyData.extraDetails || verifyData.message || "Payment verification failed");
                 }
 
                 setSubscribed(true);
+                await getSubscriptionStatus();
                 toast.success("Payment successful! Redirecting to dashboard...");
                 navigate("/student-dashboard");
               } catch (error) {
-                console.error("Payment verification error:", error);
+                console.error("Payment verification error:", error, { response: verifyData });
                 toast.error(error.message);
               }
             },
@@ -93,12 +102,12 @@ const SubscriptionPage = () => {
 
           const rzp = new window.Razorpay(options);
           rzp.on("payment.failed", (response) => {
-            toast.error("Payment failed. Please try again.");
             console.error("Payment failed:", response.error);
+            toast.error(`Payment failed: ${response.error.description}`);
           });
           rzp.open();
         } catch (error) {
-          console.error("Order creation error:", error);
+          console.error("Order creation error:", error, { response: orderData });
           toast.error(error.message);
         } finally {
           setLoading(false);
@@ -106,6 +115,7 @@ const SubscriptionPage = () => {
       };
 
       script.onerror = () => {
+        console.error("Razorpay SDK failed to load");
         toast.error("Failed to load Razorpay SDK.");
         setLoading(false);
       };

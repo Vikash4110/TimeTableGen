@@ -176,6 +176,10 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
+// Debug environment variables
+console.log('RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID);
+console.log('RAZORPAY_KEY_SECRET:', process.env.RAZORPAY_KEY_SECRET ? '[REDACTED]' : undefined);
+
 // Error Middleware
 app.use(errorMiddleware);
 

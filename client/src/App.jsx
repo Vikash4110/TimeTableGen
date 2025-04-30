@@ -18,7 +18,7 @@ import TeacherProfile from "./Pages/TeacherProfile";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
 import SubscriptionPage from './Pages/SubscriptionPage'
-
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,14 @@ function App() {
           <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
           <Route path="/teacher-profile" element={<TeacherProfile />} />
           <Route path="/student-login" element={<StudentLogin />} />
-          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route
+          path="/student-dashboard"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
           <Route path="/student-register" element={<StudentRegister />} />
           <Route path="/subscription" element={<SubscriptionPage />} />
           <Route path="/contact" element={<Contact />} />

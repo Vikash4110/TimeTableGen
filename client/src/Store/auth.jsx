@@ -154,21 +154,28 @@ export const AuthProvider = ({ children }) => {
     if (!token) return null;
     try {
       const decoded = jwtDecode(token);
+      setSubscribed(decoded.subscribed || false); // Initialize subscribed from JWT
       return decoded.role;
     } catch (error) {
       console.error("Error decoding token:", error);
+      setSubscribed(false);
       return null;
     }
   };
 
   const getSubscriptionStatus = async () => {
-    if (!token || role !== "student") return false;
+    if (!token || role !== "student") {
+      setSubscribed(false);
+      return false;
+    }
     try {
-      const response = await fetch(`${backendUrl}/api/students/subscription-status`, {
+      const response = await fetch(`${backendUrl}/api/students/get-subscription-status`, {
         method: "GET",
         headers: { Authorization: authorizationToken },
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setSubscribed(data.subscribed);
       return data.subscribed;
@@ -185,7 +192,9 @@ export const AuthProvider = ({ children }) => {
         method: "GET",
         headers: { Authorization: authorizationToken },
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setUser(data);
       console.log("Authenticated teacher:", data);
@@ -201,7 +210,9 @@ export const AuthProvider = ({ children }) => {
         method: "GET",
         headers: { Authorization: authorizationToken },
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setUser(data);
       console.log("Authenticated student:", data);
@@ -241,6 +252,17 @@ export const AuthProvider = ({ children }) => {
     authenticate();
   }, [token]);
 
+  const login = (userData, serverToken) => {
+    storeTokenInLS(serverToken);
+    setUser(userData);
+    const decoded = jwtDecode(serverToken);
+    setRole(decoded.role || "student");
+    setSubscribed(decoded.subscribed || false);
+    if (decoded.role === "student") {
+      getSubscriptionStatus();
+    }
+  };
+
   const isLoggedIn = !!token;
 
   return (
@@ -248,6 +270,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         isLoggedIn,
         storeTokenInLS,
+        login,
         logoutUser,
         user,
         role,

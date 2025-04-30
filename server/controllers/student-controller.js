@@ -302,7 +302,7 @@ const registerStudent = [
         return res.status(400).json({ status: 400, message: 'Email already registered', extraDetails: '' });
       }
 
-      const gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' });
+      const gfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db, { bucketName: 'Uploads' });
       let profilePictureId = null;
 
       if (req.file) {
@@ -368,7 +368,7 @@ const verifyOTP = async (req, res, next) => {
       profilePicture: tempStudent.profilePicture,
       parentName: tempStudent.parentName,
       parentMobileNumber: tempStudent.parentMobileNumber,
-      subscribed: false, // Initially not subscribed
+      subscribed: false,
     });
     await student.save();
     const token = student.generateToken();
@@ -492,26 +492,72 @@ const updateProfile = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
   try {
+    console.log("Creating order for user:", req.user);
+    console.log("Razorpay instance:", {
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET ? "[REDACTED]" : undefined,
+    });
+
     const student = await Student.findById(req.user.userId);
     if (!student) {
+      console.log(`Student not found for userId: ${req.user.userId}`);
       return res.status(404).json({ status: 404, message: 'Student not found', extraDetails: '' });
     }
     if (student.subscribed && student.subscriptionEndDate > new Date()) {
+      console.log(`Already subscribed: ${student.email}`);
       return res.status(400).json({ status: 400, message: 'Already subscribed', extraDetails: '' });
     }
+
+    const shortId = student._id.toString().slice(0, 8); // First 8 chars of _id
+    const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+    const receipt = `rcpt_${shortId}_${timestamp}`; // e.g., rcpt_681075eb_123456
 
     const options = {
       amount: 10000, // ₹100 in paise
       currency: 'INR',
-      receipt: `receipt_${student._id}_${Date.now()}`,
+      receipt: receipt,
     };
+    console.log("Order options:", options);
 
-    const order = await razorpay.orders.create(options);
-    console.log(`Order created for ${student.email}: ${order.id}`);
+    // Retry logic for transient server errors
+    let order;
+    const maxRetries = 3;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        order = await razorpay.orders.create(options);
+        console.log(`Order created for ${student.email}: ${order.id}`);
+        break; // Exit loop on success
+      } catch (error) {
+        console.error(`Attempt ${attempt} failed:`, {
+          statusCode: error.statusCode,
+          error: error.error,
+          message: error.message,
+        });
+        if (error.statusCode === 500 && attempt < maxRetries) {
+          console.warn(`Attempt ${attempt} failed with SERVER_ERROR. Retrying...`);
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+          continue;
+        }
+        throw error; // Rethrow if not retryable or max retries reached
+      }
+    }
+
     res.json({ status: 200, orderId: order.id, amount: options.amount, currency: options.currency });
   } catch (error) {
-    console.error('Order creation failed:', error.message);
-    res.status(500).json({ status: 500, message: 'Failed to create order', extraDetails: error.message });
+    console.error("Order creation failed:", {
+      message: error.message,
+      stack: error.stack,
+      statusCode: error.statusCode,
+      errorDetails: error.error,
+    });
+    const statusCode = error.statusCode || 500;
+    const errorMessage = error.error?.description || error.message || 'Unknown error';
+    res.status(statusCode).json({
+      status: statusCode,
+      message: 'Failed to create order',
+      extraDetails: errorMessage,
+      errorDetails: error.error || error,
+    });
   }
 };
 
@@ -520,6 +566,7 @@ const verifyPayment = async (req, res, next) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     const student = await Student.findById(req.user.userId);
     if (!student) {
+      console.log(`Student not found for userId: ${req.user.userId}`);
       return res.status(404).json({ status: 404, message: 'Student not found', extraDetails: '' });
     }
 
@@ -552,6 +599,7 @@ const getSubscriptionStatus = async (req, res, next) => {
   try {
     const student = await Student.findById(req.user.userId);
     if (!student) {
+      console.log(`Student not found for userId: ${req.user.userId}`);
       return res.status(404).json({ status: 404, message: 'Student not found', extraDetails: '' });
     }
     const isSubscribed = student.subscribed && student.subscriptionEndDate > new Date();
@@ -561,6 +609,43 @@ const getSubscriptionStatus = async (req, res, next) => {
     res.status(500).json({ status: 500, message: 'Failed to check subscription status', extraDetails: error.message });
   }
 };
+
+const dashboard = async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.user.userId).select('childrenName email parentName subscribed subscriptionEndDate');
+    if (!student) {
+      console.log(`Student not found for userId: ${req.user.userId}`);
+      return res.status(404).json({ status: 404, message: 'Student not found', extraDetails: '' });
+    }
+
+    // Check subscription status
+    const isSubscribed = student.subscribed && student.subscriptionEndDate > new Date();
+    if (!isSubscribed) {
+      console.log(`Unauthorized dashboard access attempt by ${student.email}: No active subscription`);
+      return res.status(403).json({
+        status: 403,
+        message: 'Access denied: Active subscription required',
+        extraDetails: 'Please purchase a subscription to access the dashboard.',
+      });
+    }
+
+    console.log(`Dashboard access granted for ${student.email}`);
+    res.json({
+      status: 200,
+      message: 'Welcome to the Student Dashboard',
+      data: {
+        childrenName: student.childrenName,
+        email: student.email,
+        parentName: student.parentName,
+        subscriptionEndDate: student.subscriptionEndDate,
+      },
+    });
+  } catch (error) {
+    console.error('Dashboard access failed:', error.message);
+    res.status(500).json({ status: 500, message: 'Failed to access dashboard', extraDetails: error.message });
+  }
+};
+
 
 module.exports = {
   registerStudent,
@@ -573,4 +658,5 @@ module.exports = {
   createOrder,
   verifyPayment,
   getSubscriptionStatus,
+  dashboard,
 };

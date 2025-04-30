@@ -35,6 +35,7 @@ const {
   createOrder,
   verifyPayment,
   getSubscriptionStatus,
+  dashboard
 } = require('../controllers/student-controller');
 const { authMiddleware, validate } = require('../middlewares/student-middleware');
 const { loginSchema } = require('../validators/student-validator');
@@ -49,5 +50,5 @@ router.put('/Profile', authMiddleware, updateProfile);
 router.post('/create-order', authMiddleware, createOrder);
 router.post('/verify-payment', authMiddleware, verifyPayment);
 router.get('/subscription-status', authMiddleware, getSubscriptionStatus);
-
-module.exports = router;;
+router.get('/dashboard', authMiddleware, dashboard);
+module.exports = router;
