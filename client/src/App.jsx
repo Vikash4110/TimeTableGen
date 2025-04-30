@@ -17,6 +17,7 @@ import TeacherDashboard from "./Pages/TeacherDashboard";
 import TeacherProfile from "./Pages/TeacherProfile";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
+import SubscriptionPage from './Pages/SubscriptionPage'
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
           <Route path="/student-login" element={<StudentLogin />} />
           <Route path="/student-dashboard" element={<StudentDashboard />} />
           <Route path="/student-register" element={<StudentRegister />} />
+          <Route path="/subscription" element={<SubscriptionPage />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
 

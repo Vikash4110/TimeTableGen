@@ -1,198 +1,82 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import timetableHero from '../assets/vecteezy_young-learners-enjoying-hands-on-programming-lessons_55545013.png'; // Placeholder for new image
-import { 
-  FaChalkboardTeacher, 
-  FaSchool, 
-  FaUserGraduate,
-  FaUsers,
-  FaUserPlus,
-  FaArrowRight,
-  FaBookOpen,
-  FaChartLine,
-  FaUserTie
-} from 'react-icons/fa';
-
-const stats = [
-  { value: '50K+', label: 'Schedules Generated', icon: <FaUserGraduate className="text-indigo-500 text-2xl mb-2" /> },
-  { value: '1K+', label: 'Faculty Supported', icon: <FaChalkboardTeacher className="text-indigo-500 text-2xl mb-2" /> },
-  { value: '200+', label: 'Rooms Managed', icon: <FaSchool className="text-indigo-500 text-2xl mb-2" /> },
-];
-
-const StatItem = ({ item, index }) => {
-  return (
-    <motion.div
-      className="flex flex-col items-center px-4 py-4 bg-white rounded-lg shadow-sm"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-      whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
-    >
-      {item.icon}
-      <p className="text-3xl font-bold text-indigo-600 mb-1">{item.value}</p>
-      <p className="text-sm font-medium text-gray-500">{item.label}</p>
-    </motion.div>
-  );
-};
 
 const HeroSection = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const textVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { 
-        duration: 0.8, 
-        ease: [0.2, 0.65, 0.3, 0.9] 
-      } 
-    },
-  };
-
-  const imageVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { 
-        duration: 0.8, 
-        ease: [0.2, 0.65, 0.3, 0.9] 
-      } 
-    },
-  };
-
-  const buttonVariants = {
-    rest: { scale: 1 },
-    hover: { 
-      scale: 1.05, 
-      transition: { 
-        duration: 0.2,
-        ease: [0.4, 0, 0.2, 1],
-      } 
-    },
-    tap: { 
-      scale: 0.98,
-      transition: { 
-        duration: 0.1 
-      } 
-    },
-  };
-
   return (
-    <section className="relative bg-gradient-to-b from-gray-50 to-white py-16 md:py-24 lg:py-32 overflow-hidden">
-      {/* Background elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-50/30 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-indigo-100/30 blur-3xl" />
-      </div>
-      
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        <motion.div
-          className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
+    <section className="relative bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden">
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <svg
+          className="w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1000 800"
         >
-          {/* Text Content */}
-          <motion.div 
-            className="flex-1 lg:w-1/2"
-            variants={textVariants}
-          >
-            <div className="max-w-xl mx-auto lg:mx-0">
-              <motion.h1 
-                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-gray-900"
-              >
-                <span className="flex items-center gap-2">
-                  <FaUserTie className="text-indigo-500 text-4xl" />
-                  <span>Create Your</span>
-                </span>
-                <span className="relative inline-block">
-                  <span className="relative z-10">Timetable</span>
-                  <span className="absolute bottom-0 left-0 w-full h-3 bg-indigo-200/50 -z-1" style={{ bottom: '10%' }} />
-                </span>
-                <span className="flex items-center gap-2 text-indigo-600">
-                  <FaChartLine className="text-indigo-500" />
-                  <span>with Ease</span>
-                </span>
-              </motion.h1>
-              
-              <motion.p 
-                className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed flex items-start gap-2"
-                variants={textVariants}
-              >
-                <FaBookOpen className="text-indigo-400 mt-1 flex-shrink-0" />
-                <span>Automate university scheduling with our intelligent platform, powered by Genetic Algorithms, to generate conflict-free timetables for faculty, students, and rooms.</span>
-              </motion.p>
-              
-              <motion.div 
-                className="flex flex-col sm:flex-row gap-4 mb-12"
-                variants={textVariants}
-              >
-                <motion.div variants={buttonVariants}>
-                  <Link
-                    to="/student-register"
-                    className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg shadow-md transition-all duration-200"
-                  >
-                    <FaUsers className="text-lg" />
-                    Register as Student
-                    <FaArrowRight className="text-sm" />
-                  </Link>
-                </motion.div>
-                
-            
+          <path
+            fill="#4F46E5"
+            d="M0 0h1000v800H0z"
+            opacity="0.05"
+          />
+          <circle cx="200" cy="100" r="50" fill="#4F46E5" opacity="0.1" />
+          <circle cx="800" cy="700" r="80" fill="#4F46E5" opacity="0.1" />
+          <circle cx="500" cy="400" r="120" fill="#4F46E5" opacity="0.05" />
+        </svg>
+      </div>
 
-                <motion.div variants={buttonVariants}>
-                  <Link
-                    to="/admin-login"
-                    className="flex items-center justify-center gap-2 bg-white border border-gray-200 hover:border-indigo-300 text-gray-700 hover:text-indigo-700 font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
-                  >
-                    <FaUserPlus className="text-lg" />
-                     Admin Login
-                    <FaArrowRight className="text-sm" />
-                  </Link>
-                </motion.div>
-              </motion.div>
-              
-              {/* <motion.div 
-                className="grid grid-cols-3 gap-4 max-w-md"
-                variants={textVariants}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          {/* Left content */}
+          <div className="text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              Discover Your Perfect <span className="text-indigo-600">Learning Path</span>
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-lg">
+              Our AI-powered platform analyzes your skills and interests to recommend personalized projects that will accelerate your learning journey.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Link
+                to="/student-register"
+                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
-                {stats.map((item, index) => (
-                  <StatItem key={index} item={item} index={index} />
-                ))}
-              </motion.div> */}
+                Get Started 
+              </Link>
+        
             </div>
-          </motion.div>
+            <div className="mt-8 flex items-center justify-center md:justify-start space-x-2 text-gray-500">
+              <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Personalized project recommendations</span>
+            </div>
+          </div>
 
-          {/* Image Content */}
-          <motion.div 
-            className="flex-1 lg:w-1/2 relative"
-            variants={imageVariants}
-          >
-            <div className="relative w-full max-w-lg mx-auto">
-              <div className="relative z-10 rounded-xl overflow-hidden">
-                <img
-                  src={timetableHero}
-                  className="w-full h-auto object-cover"
-                  alt="University timetable scheduling interface"
-                />
+          {/* Right image */}
+          <div className="relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition duration-500">
+              <img
+                src="https://images.unsplash.com/photo-1584697964358-3e14ca57658b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                alt="Student using learning platform"
+                className="w-full h-auto object-cover"
+              />
+              {/* Floating chat bubble */}
+              <div className="absolute bottom-20 left-6 bg-white p-4 rounded-xl shadow-lg max-w-xs animate-float">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <svg className="h-6 w-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                      <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-sm font-medium text-gray-900">Learning Assistant</div>
+                    <div className="mt-1 text-sm text-gray-600">
+                      Based on your interests, I recommend trying a weather app project with React!
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-64 h-64 bg-indigo-100 rounded-full opacity-20 blur-xl" />
-              <div className="absolute -top-6 -left-6 w-48 h-48 bg-indigo-200 rounded-full opacity-10 blur-xl" />
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import HeroSection from "../Components/HeroSection";
 import Footer from "../Components/Footer";
-import WhyEdu from "../Components/WhyEdu";
 import OurMission from "../Components/OurMission";
+import Features from "../Components/Features";
+import CTA from "../Components/CTA";
 import Review from "../Components/Review";
+import HowItsWork from "../Components/HowItsWork";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
@@ -21,10 +23,11 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <WhyEdu/>
-      {/* <OurMission />
+      <HowItsWork />
       <Review />
-      <Footer /> */}
+      <Features />
+      {/* <CTA /> */}
+      <Footer /> 
     </>
   );
 };

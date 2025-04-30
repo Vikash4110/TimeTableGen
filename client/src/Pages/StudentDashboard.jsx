@@ -4,12 +4,13 @@ import {
   FaUserGraduate,
   FaHome,
   FaBook,
-  FaCalendarAlt,
-  FaClipboardList,
+  FaRobot,
+  FaEnvelope,
   FaSignOutAlt,
   FaSearch,
   FaCheck,
   FaUserEdit,
+  FaTasks,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -34,11 +35,11 @@ const StudentDashboard = () => {
         onClick={onClick}
         className={`flex items-center gap-3 w-full text-left p-3 rounded-lg transition-all duration-200 font-medium ${
           active
-            ? "bg-blue-50 text-blue-600 font-semibold"
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+            ? "bg-blue-100 text-blue-700 font-semibold"
+            : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
         }`}
       >
-        <span className={`w-5 h-5 flex items-center justify-center ${active ? "text-blue-500" : "text-gray-500"}`}>
+        <span className={`w-5 h-5 flex items-center justify-center ${active ? "text-blue-600" : "text-gray-500"}`}>
           {icon}
         </span>
         {label}
@@ -48,17 +49,17 @@ const StudentDashboard = () => {
 
   const StatCard = ({ icon, value, label, change, onClick }) => (
     <motion.div
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer"
+      className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer"
       whileHover={{ y: -5 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-3xl font-bold text-gray-800">{value}</p>
-          <p className="text-gray-600">{label}</p>
+          <p className="text-2xl font-bold text-gray-800">{value}</p>
+          <p className="text-gray-600 text-sm">{label}</p>
         </div>
-        <div className="p-3 rounded-lg bg-opacity-20 bg-gray-200">{icon}</div>
+        <div className="p-3 rounded-lg bg-opacity-10 bg-blue-200">{icon}</div>
       </div>
       <p className={`text-xs mt-2 ${change.startsWith("+") ? "text-green-500" : "text-blue-500"}`}>{change}</p>
     </motion.div>
@@ -68,30 +69,30 @@ const StudentDashboard = () => {
     const stats = [
       {
         icon: <FaBook className="text-blue-500" />,
-        value: "6",
-        label: "Enrolled Courses",
-        change: "2 new this semester",
-        onClick: () => setActiveTab("courses"),
+        value: "4",
+        label: "Active Projects",
+        change: "+1 new this week",
+        onClick: () => setActiveTab("projects"),
       },
       {
-        icon: <FaCalendarAlt className="text-purple-500" />,
-        value: "5",
-        label: "Weekly Classes",
-        change: "Updated today",
-        onClick: () => setActiveTab("schedule"),
-      },
-      {
-        icon: <FaClipboardList className="text-green-500" />,
+        icon: <FaRobot className="text-purple-500" />,
         value: "3",
-        label: "Pending Assignments",
-        change: "+1 due tomorrow",
-        onClick: () => setActiveTab("assignments"),
+        label: "AI Recommendations",
+        change: "Updated today",
+        onClick: () => setActiveTab("chatbot"),
+      },
+      {
+        icon: <FaEnvelope className="text-green-500" />,
+        value: "2",
+        label: "Parent Updates",
+        change: "+1 new message",
+        onClick: () => setActiveTab("parent"),
       },
       {
         icon: <FaUserEdit className="text-orange-500" />,
         value: "1",
-        label: "Profile Updates",
-        change: "Verify email",
+        label: "Profile Actions",
+        change: "Update photo",
         onClick: () => setActiveTab("profile"),
       },
     ];
@@ -100,26 +101,26 @@ const StudentDashboard = () => {
       <div className="space-y-8">
         {/* Welcome Card */}
         <motion.div
-          className="bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl shadow-lg p-6 text-white"
+          className="bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl shadow-lg p-6 text-white"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-2xl font-bold mb-2">Welcome back, {user?.name || "Student"}!</h2>
+              <h2 className="text-2xl font-bold mb-2">Hello, {user?.childrenName || "Young Learner"}!</h2>
               <p className="opacity-90 max-w-lg">
-                Stay on top of your studies. Check your schedule, assignments, or update your profile.
+                Explore fun projects, chat with our AI helper, or check messages from your parents.
               </p>
             </div>
             <div className="bg-white/20 p-3 rounded-lg">
-              <FaBook className="text-xl" />
+              <FaUserGraduate className="text-xl" />
             </div>
           </div>
         </motion.div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <StatCard
               key={index}
@@ -133,26 +134,26 @@ const StudentDashboard = () => {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
           <div className="space-y-4">
             <div className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
               <div className="p-2 rounded-lg bg-blue-100 text-blue-600">
-                <FaCalendarAlt />
+                <FaTasks />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-800">Schedule Updated</h4>
-                <p className="text-sm text-gray-600">New class added for Data Structures</p>
+                <h4 className="font-medium text-gray-800">New Project Added</h4>
+                <p className="text-sm text-gray-600">"Build a Solar System Model" assigned</p>
               </div>
-              <span className="text-xs text-gray-400 whitespace-nowrap">1 hour ago</span>
+              <span className="text-xs text-gray-400 whitespace-nowrap">2 hours ago</span>
             </div>
             <div className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
               <div className="p-2 rounded-lg bg-green-100 text-green-600">
                 <FaCheck />
               </div>
               <div className="flex-1">
-                <h4 className="font-medium text-gray-800">Assignment Submitted</h4>
-                <p className="text-sm text-gray-600">Completed Algorithms homework</p>
+                <h4 className="font-medium text-gray-800">Parent Message Read</h4>
+                <p className="text-sm text-gray-600">"Great job on your last project!"</p>
               </div>
               <span className="text-xs text-gray-400 whitespace-nowrap">Yesterday</span>
             </div>
@@ -170,9 +171,9 @@ const StudentDashboard = () => {
 
   const tabConfig = [
     { id: "home", label: "Dashboard", icon: <FaHome className="w-4 h-4" /> },
-    { id: "courses", label: "Courses", icon: <FaBook className="w-4 h-4" /> },
-    { id: "schedule", label: "Schedule", icon: <FaCalendarAlt className="w-4 h-4" /> },
-    { id: "assignments", label: "Assignments", icon: <FaClipboardList className="w-4 h-4" /> },
+    { id: "projects", label: "Projects", icon: <FaTasks className="w-4 h-4" /> },
+    { id: "chatbot", label: "AI Helper", icon: <FaRobot className="w-4 h-4" /> },
+    { id: "parent", label: "Parent Updates", icon: <FaEnvelope className="w-4 h-4" /> },
     { id: "profile", label: "Profile", icon: <FaUserEdit className="w-4 h-4" /> },
   ];
 
@@ -180,32 +181,74 @@ const StudentDashboard = () => {
     switch (activeTab) {
       case "home":
         return <DashboardHome user={user} setActiveTab={setActiveTab} />;
-      case "courses":
+      case "projects":
         return (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Course Management</h3>
-            <p className="text-gray-500 mt-2">View enrolled courses and access study materials.</p>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Projects</h3>
+            <p className="text-gray-600 mb-6">Explore fun and educational projects to spark your creativity!</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-medium text-gray-800">Build a Solar System Model</h4>
+                <p className="text-sm text-gray-600 mt-1">Learn about planets and create a 3D model.</p>
+                <button className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-medium text-gray-800">Plant Growth Experiment</h4>
+                <p className="text-sm text-gray-600 mt-1">Study how plants grow under different conditions.</p>
+                <button className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium">View Details</button>
+              </div>
+            </div>
           </div>
         );
-      case "schedule":
+      case "chatbot":
         return (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Class Schedule</h3>
-            <p className="text-gray-500 mt-2">Check your weekly timetable and class details.</p>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">AI Helper</h3>
+            <p className="text-gray-600 mb-6">Ask our AI chatbot for project ideas or help with your studies!</p>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-700">Try asking: "Suggest a fun science project for kids!"</p>
+              <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                Start Chatting
+              </button>
+            </div>
           </div>
         );
-      case "assignments":
+      case "parent":
         return (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Assignments</h3>
-            <p className="text-gray-500 mt-2">Track pending assignments and submission deadlines.</p>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Parent Updates</h3>
+            <p className="text-gray-600 mb-6">Stay connected with messages and updates from your parents.</p>
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h4 className="font-medium text-gray-800">Message from {user?.parentName || "Parent"}</h4>
+                <p className="text-sm text-gray-600 mt-1">"Great job on your last project!"</p>
+                <button className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium">Reply</button>
+              </div>
+            </div>
           </div>
         );
       case "profile":
         return (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-            <h3 className="text-xl font-medium text-gray-600">Profile Management</h3>
-            <p className="text-gray-500 mt-2">Update your personal information and settings.</p>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Profile</h3>
+            <p className="text-gray-600 mb-6">Update your details to keep your account current.</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <p className="mt-1 text-gray-800">{user?.childrenName || "Not set"}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <p className="mt-1 text-gray-800">{user?.email || "Not set"}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Parent Name</label>
+                <p className="mt-1 text-gray-800">{user?.parentName || "Not set"}</p>
+              </div>
+            </div>
+            <button className="mt-6 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+              Edit Profile
+            </button>
           </div>
         );
       default:
@@ -236,7 +279,7 @@ const StudentDashboard = () => {
 
       {/* Sidebar */}
       <motion.aside
-        className={`w-64 bg-white shadow-lg p-6 flex flex-col justify-between fixed h-full border-r border-gray-200 z-10 transform ${
+        className={`w-64 bg-white shadow-lg p-6 flex flex-col justify-between fixed h-full border-r border-gray-200 z-20 transform ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 transition-transform duration-300 ease-in-out`}
         initial={{ x: -100, opacity: 0 }}
@@ -247,12 +290,12 @@ const StudentDashboard = () => {
           {/* Logo/Branding */}
           <div className="mb-10 flex flex-col items-start">
             <div className="flex items-center gap-3 mb-2">
-              <div className="bg-blue-500 p-2 rounded-lg">
+              <div className="bg-blue-600 p-2 rounded-lg">
                 <FaUserGraduate className="text-white text-xl" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">StudentPortal</h2>
+              <h2 className="text-2xl font-bold text-gray-800">EduKids</h2>
             </div>
-            <p className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full">Student Dashboard</p>
+            <p className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full">Learning Dashboard</p>
           </div>
 
           {/* Navigation */}
@@ -283,10 +326,10 @@ const StudentDashboard = () => {
 
           {/* User Profile Mini */}
           <div className="flex items-center gap-3 mt-6 p-3 bg-gray-50 rounded-lg">
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-              {user?.name?.charAt(0) || "S"}
+            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+              {user?.childrenName?.charAt(0) || "S"}
             </div>
-            <span className="font-medium text-gray-700 text-sm">{user?.name || "Student"}</span>
+            <span className="font-medium text-gray-700 text-sm">{user?.childrenName || "Student"}</span>
           </div>
         </div>
       </motion.aside>
@@ -303,17 +346,17 @@ const StudentDashboard = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Search projects..."
+                className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
               />
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                {user?.name?.charAt(0) || "S"}
+              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+                {user?.childrenName?.charAt(0) || "S"}
               </div>
-              <span className="font-medium text-gray-700 hidden md:inline">{user?.name || "Student"}</span>
+              <span className="font-medium text-gray-700 hidden md:inline">{user?.childrenName || "Student"}</span>
             </div>
           </div>
         </div>

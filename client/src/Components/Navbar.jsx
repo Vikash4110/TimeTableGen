@@ -10,12 +10,13 @@ import {
   FaBell,
   FaChevronDown,
   FaChevronUp,
-  FaChalkboardTeacher,
   FaUserGraduate,
+  FaUserPlus,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../Store/auth";
 import { toast } from "sonner";
+import Logo from '../assets/Logo.avif'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -93,11 +94,8 @@ const Navbar = () => {
           {/* Logo */}
           <motion.div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg">
-                <FaUserGraduate className="h-6 w-6 text-white" />
-              </div>
               <motion.span className="text-2xl font-bold text-gray-800">
-                <span className="text-blue-600">Uni</span>Schedule
+              <img src={Logo} className="h-16 w-36 text-white" ></img>
               </motion.span>
             </Link>
           </motion.div>
@@ -178,10 +176,10 @@ const Navbar = () => {
             ) : (
               <>
                 <Link
-                  to="/teacher-login"
-                  className="hidden lg:flex items-center px-4 py-2 rounded-md font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  to="/student-register"
+                  className="hidden lg:flex items-center px-4 py-2 rounded-md font-medium bg-blue-700 text-white hover:text-blue-600 hover:bg-blue-50 transition-colors"
                 >
-                  <FaChalkboardTeacher className="mr-2" /> Teacher Login
+                  <FaUserPlus className="mr-2" /> Student Register
                 </Link>
                 <Link
                   to="/student-login"
@@ -264,11 +262,11 @@ const Navbar = () => {
                   <>
                     <div className="border-t border-gray-200 my-2"></div>
                     <Link
-                      to="/teacher-login"
-                      className="px-4 py-3 rounded-md font-medium flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100"
+                      to="/student-register"
+                      className="px-4 py-3 rounded-md font-medium flex items-center justify-center bg-blue-800 text-white hover:bg-blue-100"
                       onClick={() => setIsOpen(false)}
                     >
-                      <FaChalkboardTeacher className="mr-2" /> Teacher Login
+                      <FaUserPlus className="mr-2" /> Student Register
                     </Link>
                     <Link
                       to="/student-login"
