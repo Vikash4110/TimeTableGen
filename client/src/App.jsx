@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom"; // Added Navigate
 import { AuthProvider } from "./Store/auth";
 import Home from "./Pages/Home";
 import Navbar from "./Components/Navbar";
@@ -17,8 +17,10 @@ import TeacherDashboard from "./Pages/TeacherDashboard";
 import TeacherProfile from "./Pages/TeacherProfile";
 import About from "./Pages/About";
 import Contact from "./Pages/Contact";
-import SubscriptionPage from './Pages/SubscriptionPage'
-import ProtectedRoute from "./Components/ProtectedRoute";
+import SubscriptionPage from "./Pages/SubscriptionPage";
+import StudentProfile from "./Components/StudentProfile";
+import StudentProject from './Pages/StudentProject'
+import { useAuth } from "./Store/auth";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,36 +39,83 @@ function App() {
     }
   }, []);
 
+  // ProtectedRoute component
+  const ProtectedRoute = ({ children, allowedRole }) => {
+    const { isLoggedIn, role } = useAuth();
+    if (!isLoggedIn || (allowedRole && role !== allowedRole)) {
+      return <Navigate to="/student-login" replace />;
+    }
+    return children;
+  };
+
   return (
     <AuthProvider>
       {isLoading && <Loader />}
       <div className={`${isLoading ? "hidden" : "block"}`}>
         <Navbar />
         <Routes>
-          {/* TeacherRoutes */}
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/teacher-login" element={<TeacherLogin />} />
           <Route path="/teacher-register" element={<TeacherRegister />} />
-          <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-          <Route path="/teacher-profile" element={<TeacherProfile />} />
           <Route path="/student-login" element={<StudentLogin />} />
-          <Route
-          path="/student-dashboard"
-          element={
-            <ProtectedRoute>
-              <StudentDashboard />
-            </ProtectedRoute>
-          }
-        />
           <Route path="/student-register" element={<StudentRegister />} />
-          <Route path="/subscription" element={<SubscriptionPage />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-register" element={<AdminRegister />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          {/* 404 ErrorPage */}
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/subscription" element={<SubscriptionPage />} />
+          {/* Protected Routes */}
+          <Route
+            path="/teacher-dashboard"
+            element={
+              <ProtectedRoute allowedRole="teacher">
+                <TeacherDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/teacher-profile"
+            element={
+              <ProtectedRoute allowedRole="teacher">
+                <TeacherProfile />
+              </ProtectedRoute>
+            }
+          />
+             <Route
+            path="/student-project"
+            element={
+              <ProtectedRoute>
+                <StudentProject />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student-dashboard"
+            element={
+              <ProtectedRoute allowedRole="student">
+                <StudentDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student-profile"
+            element={
+              <ProtectedRoute allowedRole="student">
+                <StudentProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <ProtectedRoute allowedRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 404 Error Page */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

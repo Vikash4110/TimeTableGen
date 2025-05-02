@@ -15,7 +15,14 @@
 //   profilePicture: { type: mongoose.Schema.Types.ObjectId, ref: 'Uploads.files' },
 //   parentName: { type: String, required: true },
 //   parentMobileNumber: { type: String, required: true },
+//   project: {
+//     title: { type: String },
+//     description: { type: String },
+//   },
+//   submittedPhotos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Uploads.files' }],
 //   role: { type: String, default: 'student' },
+//   subscribed: { type: Boolean, default: false },
+//   subscriptionEndDate: { type: Date, default: null },
 // }, { timestamps: true });
 
 // studentSchema.pre('save', async function(next) {
@@ -31,7 +38,7 @@
 
 // studentSchema.methods.generateToken = function() {
 //   return jwt.sign(
-//     { userId: this._id, role: 'student' },
+//     { userId: this._id, role: 'student', subscribed: this.subscribed },
 //     process.env.JWT_KEY,
 //     { expiresIn: '24h' }
 //   );
@@ -56,9 +63,19 @@ const studentSchema = new mongoose.Schema({
   profilePicture: { type: mongoose.Schema.Types.ObjectId, ref: 'Uploads.files' },
   parentName: { type: String, required: true },
   parentMobileNumber: { type: String, required: true },
+  project: {
+    title: { type: String },
+    description: { type: String },
+  },
+  submittedPhotos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Uploads.files' }],
   role: { type: String, default: 'student' },
-  subscribed: { type: Boolean, default: false }, // New field
-  subscriptionEndDate: { type: Date, default: null }, // New field
+  subscribed: { type: Boolean, default: false },
+  subscriptionEndDate: { type: Date, default: null },
+  planType: { 
+    type: String, 
+    enum: ['one-time', 'monthly', 'quarterly', null], 
+    default: null 
+  },
 }, { timestamps: true });
 
 studentSchema.pre('save', async function(next) {
@@ -74,7 +91,7 @@ studentSchema.methods.comparePassword = async function(candidatePassword) {
 
 studentSchema.methods.generateToken = function() {
   return jwt.sign(
-    { userId: this._id, role: 'student', subscribed: this.subscribed },
+    { userId: this._id, role: 'student', subscribed: this.subscribed, planType: this.planType },
     process.env.JWT_KEY,
     { expiresIn: '24h' }
   );
